@@ -7,11 +7,16 @@ async function main() {
     headers: { "X-Api-Key": process.env.GATER_SECRET },
   });
 
-  const response = await gater.post("/set", {
-    user: "user_123",
+  await gater.post("/macros", {
+    name: "price_123ABC",
     feature: "app_tokens",
     quota: 1000000,
     reset: "month",
+  });
+
+  const response = await gater.post("/set", {
+    user: "user_123",
+    macro: "price_123ABC",
   });
 
   console.log(response.data);

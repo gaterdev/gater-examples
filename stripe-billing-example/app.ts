@@ -51,17 +51,9 @@ async function handleSubscriptionCreated(
   gater: AxiosInstance
 ) {
   const user = subscription.metadata.user_id; // assuming you attached this during checkout
-  const plan = subscription.items.data[0].plan.id;
+  const macro = subscription.items.data[0].plan.id;
 
-  let payload;
-
-  if (plan === "price_ABC123") {
-    payload = { user, feature: "tokens", quota: 10000, reset: "month" };
-  } else if (plan === "price_DEF456") {
-    payload = { user, feature: "tokens", quota: 1000, reset: "month" };
-  } else {
-    throw new Error("no entitlement exists for the given plan");
-  }
+  const payload = { user, macro };
 
   await gater.post("/set", payload);
 }
@@ -72,7 +64,7 @@ async function handleSubscriptionCanceled(
 ) {
   const user = subscription.metadata.user_id;
 
-  const payload = { user, feature: "tokens", quota: 0, reset: "never" };
+  const payload = { user, macro: "cancel_tokens" };
 
   await gater.post("/set", payload);
 }
@@ -89,10 +81,8 @@ async function handleUpcomingInvoice(
   const meter = "api_tokens"; // Stripe meter event name
 
   const entitlement = await gater.get("/check", { params });
-
   const usage = entitlement.data.usage as number;
 
-  // Send meter event to Stripe
   await stripe.billing.meterEvents.create({
     event_name: meter,
     payload: {

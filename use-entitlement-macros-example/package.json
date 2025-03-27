@@ -1,5 +1,5 @@
 {
-  "name": "check-entitlements-example",
+  "name": "use-entitlement-macros-example",
   "version": "1.0.0",
   "type": "module",
   "main": "app.js",
